@@ -1,9 +1,10 @@
 import os
 import yaml
+import io
 import logging
 import pandas as pd
 from src.utils.all_utils import create_directory,read_yaml
-from src.utils.model import resnet
+from src.utils.model import resnet,prepare_model
 import logging
 import argparse
 
@@ -31,7 +32,24 @@ def prepare_base_model(config_path, params_path):
     base_model_path = os.path.join(base_model_dir_path, base_model_name)
 
     model= resnet(input_shape=params["IMAGE_SIZE"], model_path=base_model_path)
-    
+
+    full_model= prepare_model(model,classes=params["classes"],freeze_all=True,freeze_till=None,learning_rate=params["learning_rate"])
+
+    update_base_model_path = os.path.join(
+        base_model_dir_path,
+        artifacts["UPDATED_BASE_MODEL_NAME"]
+    )
+
+    def _log_model_summary(full_model):
+        with io.StringIO() as stream:
+            full_model.summary(print_fn=lambda x: stream.write(f"{x}\n"))
+            summary_str = stream.getvalue()
+        return summary_str
+
+    logging.info(f"full model summary: \n{_log_model_summary(full_model)}")
+
+    full_model.save(update_base_model_path)
+
 if __name__ == '__main__':
     args = argparse.ArgumentParser()
 
