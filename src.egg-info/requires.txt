@@ -1,0 +1,7 @@
+dvc
+tensorflow
+matplotlib
+numpy
+pandas
+split-folders
+PyYAML
