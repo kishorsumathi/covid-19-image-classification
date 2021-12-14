@@ -1,0 +1,3 @@
+IMAGE_SIZE: [224, 224, 3]
+classes:  3
+learning_rate: 0.001
