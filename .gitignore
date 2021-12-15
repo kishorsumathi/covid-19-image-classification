@@ -1,5 +1,4 @@
 /envs
-/data
 /dist
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -139,4 +138,3 @@ research
 ./env
 # ignore the secrets file
 config/secrets.yaml
-/data
