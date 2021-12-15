@@ -15,7 +15,7 @@ jobs:
             python-version: '3.7'       
       - name: cml        
         env:          
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           TB_CREDENTIALS: ${{ secrets.TB_CRED }}
         run: |  
           pip install --upgrade pip        
