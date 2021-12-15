@@ -1,0 +1,30 @@
+name: covid-19-usecase
+
+
+on: [push]
+
+jobs:
+  deploy-runner:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: iterative/setup-cml@v1
+
+      - uses: actions/setup-python@v2        
+        with:      
+            python-version: '3.7'       
+      - name: cml        
+        env:          
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TB_CREDENTIALS: ${{ secrets.TB_CRED }}
+        run: |  
+          pip install --upgrade pip        
+          pip install -r requirements.txt
+          dvc repro 
+          cml-tensorboard-dev \
+            --logdir artifacts/tensorboard_log_dir/
+            --name "Go to tensorboard" \
+            --md >> report.md
+          cml-send-comment report.md
+
+
