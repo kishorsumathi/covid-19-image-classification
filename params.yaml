@@ -1,6 +1,6 @@
 IMAGE_SIZE: [224, 224, 3]
-classes:  3
+classes: 3
 learning_rate: 0.001
-AUGMENTATION: True
+AUGMENTATION: true
 BATCH_SIZE: 4
-EPOCHS: 30
+EPOCHS: 5
