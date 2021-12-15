@@ -1,0 +1,53 @@
+stages:
+    prepare_base_model:
+        cmd: python src/stage_01.py --config=config/config.yaml --params=params.yaml
+        deps:
+          - src/utils/all_utils.py
+          - src/utils/model.py
+          - config/config.yaml
+        params:
+          - IMAGE_SIZE
+          - learning_rate
+        outs:
+          - artifacts/base_model/resnet50.h5
+          - artifacts/base_model/resnet50_updated.h5
+
+    prepare_callbacks:
+        cmd: python src/stage_02.py --config=config/config.yaml 
+        deps:
+          - src/stage_01.py
+          - src/utils/all_utils.py
+          - src/utils/callbacks.py
+          - config/config.yaml
+        outs:
+          - artifacts/callbacks/checkpoint_cb.cb
+          - artifacts/callbacks/tensorboard_cb.cb
+
+    train:
+          
+        cmd: python src/stage_03_train.py --config=config/config.yaml --params=params.yaml
+        deps: 
+            - src/stage_02.py
+            - src/utils/all_utils.py
+            - src/utils/model.py
+            - src/utils/callbacks.py
+            - src/utils/data_flow.py
+            - config/config.yaml
+            - data
+            - artifacts/base_model/resnet50_updated.h5
+            - artifacts/callbacks/checkpoint_cb.cb
+            - artifacts/callbacks/tensorboard_cb.cb
+        params:
+            - IMAGE_SIZE
+            - BATCH_SIZE
+            - EPOCHS
+            - AUGMENTATION
+        outs:
+            - artifacts/model
+      
+
+
+
+
+
+    

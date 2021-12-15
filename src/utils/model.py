@@ -2,7 +2,7 @@ import tensorflow as tf
 import os
 import logging
 import keras
-from tensorflow.python.eager.monitoring import Metric
+from src.utils.all_utils import get_timestamp
 
 
 
@@ -23,10 +23,12 @@ def prepare_model(model,classes,freeze_all,freeze_till,learning_rate):
 
     
     flatten_in= tf.keras.layers.Flatten()(model.output)
+    fc1=tf.keras.layers.Dense(256,activation="relu")(flatten_in)
+    fc2=tf.keras.layers.Dense(128,activation="relu")(fc1)
     prediction= tf.keras.layers.Dense(
         units=classes,
         activation="softmax"        
-    )(flatten_in)
+    )(fc2)
 
 
     full_model=tf.keras.models.Model(
@@ -37,12 +39,25 @@ def prepare_model(model,classes,freeze_all,freeze_till,learning_rate):
 
     full_model.compile(
 
-        optimizer= tf.keras.optimizers.SGD(learning_rate-learning_rate),
+        optimizer= tf.keras.optimizers.SGD(learning_rate=learning_rate),
         loss= tf.keras.losses.CategoricalCrossentropy(),
-        metrics=[tf.keras.metrics.Accuracy(name="accuracy", dtype=None),
-                 tf.keras.metrics.AUC()])
-
+        metrics=['accuracy'])
 
     logging.info("custom model is compiled and ready to be trained")
     full_model.summary()
     return full_model
+
+
+
+def load_full_model(untrained_full_model_path):
+    model = tf.keras.models.load_model(untrained_full_model_path)
+    logging.info(f"untrained model is read from: {untrained_full_model_path}")
+    return model
+        
+def get_unique_path_to_save_model(trained_model_dir, model_name="model"):
+    timestamp = get_timestamp(model_name)
+    unique_model_name = f"{timestamp}_.h5"
+    unique_model_path = os.path.join(trained_model_dir, unique_model_name)
+    return unique_model_path
+
+   
